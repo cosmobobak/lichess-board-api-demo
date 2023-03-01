@@ -667,23 +667,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "201de327520df007757c1f0adce6e827fe8562fbc28bfd9c15571c66ca1f5f79"
 
 [[package]]
-name = "lichess-board-api-demo"
-version = "0.1.0"
-dependencies = [
- "clap",
- "cozy-chess",
- "env_logger",
- "futures-util",
- "log",
- "oauth2",
- "reqwest",
- "serde",
- "serde_json",
- "shakmaty",
- "tokio",
-]
-
-[[package]]
 name = "link-cplusplus"
 version = "1.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -857,6 +840,24 @@ dependencies = [
  "libc",
  "pkg-config",
  "vcpkg",
+]
+
+[[package]]
+name = "opponent-wrapper"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "cozy-chess",
+ "env_logger",
+ "futures-util",
+ "log",
+ "oauth2",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "serde_urlencoded",
+ "shakmaty",
+ "tokio",
 ]
 
 [[package]]
