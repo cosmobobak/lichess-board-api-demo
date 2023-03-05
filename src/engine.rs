@@ -1,4 +1,5 @@
 
+use std::io::{Read, Write};
 
 pub fn main(executable_path: String) {
     // launch the engine process
@@ -25,11 +26,11 @@ pub fn main(executable_path: String) {
         .unwrap();
 
     // print the engine's output
-    println!("{}", output);
+    println!("{output}");
 
     // wait for the engine to finish
-    engine.wait().unwrap();
+    let status = engine.wait().unwrap();
 
     // print the engine's exit status
-    println!("Engine exited with status: {}", engine);
+    println!("Engine exited with status: {status}");
 }
