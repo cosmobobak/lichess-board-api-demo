@@ -1,6 +1,7 @@
 
 use std::str::FromStr;
 
+use log::error;
 use serde::Serialize;
 
 use crate::gametype::GameType;
@@ -76,7 +77,10 @@ pub fn get_challenge_schema<T: GameType>() -> (String, ChallengeSchema) {
     user_input.clear();
     std::io::stdin().read_line(&mut user_input).unwrap();
     let colour = user_input.trim().to_lowercase();
-    let colour = colour.parse::<ChallengeColour>().unwrap();
+    let Ok(colour) = colour.parse::<ChallengeColour>() else {
+        error!("invalid colour: {colour}");
+        panic!("invalid colour");
+    };
     let clock_limit = time_control
         .split('+')
         .next()

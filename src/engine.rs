@@ -80,7 +80,7 @@ pub fn main() {
 
     // print the engine's exit status
     info!("engine exited.");
-    println!("Engine exited with status: {status}");
+    info!("Engine exited with status: {status}");
 }
 
 fn send_line(process: &mut std::process::Child, line: &str) {
