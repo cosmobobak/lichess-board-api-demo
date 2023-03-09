@@ -19,7 +19,7 @@ pub fn main() {
         }
     };
 
-    info!("launching engine: {executable_path}");
+    info!("launching engine at: {executable_path}");
 
     // launch the engine process with stdout and stdin pipes
     let mut engine = std::process::Command::new(executable_path)
