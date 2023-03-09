@@ -1,57 +1,19 @@
-use std::str::FromStr;
 
 use futures_util::StreamExt;
 use log::{debug, error, info, warn};
+
+use crate::{user::{ChallengeSchema, self}, gametype::VsHuman};
 
 use super::{LICHESS_HOST, LICHESS_TOKEN};
 
 use reqwest::Client;
 use reqwest::Response;
-use serde::Serialize;
 use shakmaty::Move;
 
 use std::io::Write;
 use shakmaty::{san::San, uci::Uci, Position};
 
 use shakmaty::Chess;
-
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize)]
-enum ChallengeColour {
-    #[serde(rename = "white")]
-    White,
-    #[serde(rename = "black")]
-    Black,
-    #[serde(rename = "random")]
-    Random,
-}
-
-impl FromStr for ChallengeColour {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "white" => Ok(Self::White),
-            "black" => Ok(Self::Black),
-            "random" => Ok(Self::Random),
-            _ => Err(()),
-        }
-    }
-}
-
-#[derive(Serialize)]
-pub struct ChallengeSchema {
-    rated: bool,
-    #[serde(rename = "clock.limit")]
-    clock_limit: u32,
-    #[serde(rename = "clock.increment")]
-    clock_increment: u32,
-    color: ChallengeColour,
-    variant: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    fen: Option<String>,
-    #[serde(rename = "keepAliveStream")]
-    keep_alive_stream: bool,
-}
 
 pub async fn send_move_to_game(client: &Client, game_id: &str, mv: &Move) -> Response {
     client
@@ -78,58 +40,8 @@ pub async fn send_challenge(client: &Client, username: &str, schema: &ChallengeS
         .unwrap()
 }
 
-pub fn get_challenge_options_from_user() -> (String, ChallengeSchema) {
-    println!("enter the username to challenge:");
-    let mut user_input = String::new();
-    std::io::stdin().read_line(&mut user_input).unwrap();
-    let username = user_input.trim().to_lowercase();
-    println!("enter the time control in the form of 'min+inc' (e.g. '5+2' for 5 minutes + 2 seconds increment):");
-    user_input.clear();
-    std::io::stdin().read_line(&mut user_input).unwrap();
-    let time_control = user_input.trim().to_lowercase();
-    println!("should the game be rated? [Y|N]");
-    user_input.clear();
-    std::io::stdin().read_line(&mut user_input).unwrap();
-    let rated = match user_input.trim().to_lowercase().as_str() {
-        "y" => true,
-        "n" => false,
-        _ => panic!("invalid input"),
-    };
-    println!("enter the challenge colour [white|black|random]:");
-    user_input.clear();
-    std::io::stdin().read_line(&mut user_input).unwrap();
-    let colour = user_input.trim().to_lowercase();
-    let colour = colour.parse::<ChallengeColour>().unwrap();
-    let clock_limit = time_control
-        .split('+')
-        .next()
-        .unwrap()
-        .parse::<u32>()
-        .unwrap()
-        * 60;
-    let clock_increment = time_control
-        .split('+')
-        .last()
-        .unwrap()
-        .parse::<u32>()
-        .unwrap();
-    let keep_alive_stream = true;
-    (
-        username,
-        ChallengeSchema {
-            rated,
-            clock_limit,
-            clock_increment,
-            color: colour,
-            variant: "standard".to_string(),
-            fen: None,
-            keep_alive_stream,
-        },
-    )
-}
-
 pub async fn create_new_game(client: &Client) -> Option<String> {
-    let (username, schema) = get_challenge_options_from_user();
+    let (username, schema) = user::get_challenge_schema::<VsHuman>();
     let response = send_challenge(client, &username, &schema).await;
     debug!("challenge sent, response: {response:?}");
     let mut stream = response.bytes_stream();

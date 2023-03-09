@@ -3,12 +3,14 @@
 mod cliargs;
 mod lichess;
 mod engine;
+mod user;
+mod gametype;
 
 pub const LICHESS_TOKEN: &str = include_str!("../token.txt");
 pub const LICHESS_HOST: &str = "https://lichess.org";
 
-// send/receive messages to/from lichess using reqwest
-// make a connection and read the ongoing games
+pub const VIRIDITHAS_EXECUTABLE_PATH: &str = include_str!("../viridithas_executable_path.txt");
+pub const MAIA_EXECUTABLE_PATH: &str = include_str!("../maia_executable_path.txt");
 
 #[tokio::main]
 async fn main() {
@@ -24,8 +26,7 @@ async fn main() {
         lichess::main().await;
     }
 
-    if let Some(engine_path) = args.engine {
-        log::debug!("engine path: {engine_path}");
-        engine::main(engine_path);
+    if args.engine {
+        engine::main();
     }
 }

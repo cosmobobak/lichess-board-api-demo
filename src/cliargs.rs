@@ -8,5 +8,5 @@ pub struct Cli {
     #[clap(short, long)]
     pub lichess: bool,
     #[clap(short, long)]
-    pub engine: Option<String>,
+    pub engine: bool,
 }
