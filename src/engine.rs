@@ -21,6 +21,11 @@ pub fn main() {
 
     info!("launching engine at: {executable_path}");
 
+    if !std::path::Path::new(executable_path).exists() {
+        error!("engine executable not found at: {executable_path}");
+        return;
+    }
+
     // launch the engine process with stdout and stdin pipes
     let mut engine = std::process::Command::new(executable_path)
         .stdin(std::process::Stdio::piped())

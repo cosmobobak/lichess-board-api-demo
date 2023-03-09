@@ -6,6 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+openssl = "0.10.37"
 clap = { version = "4.1.6", features = ["derive"] }
 cozy-chess = "0.3.1"
 env_logger = "0.10.0"
@@ -19,3 +20,6 @@ serde_json = "1.0.93"
 serde_urlencoded = "0.7.1"
 shakmaty = "0.23.0"
 tokio = { version = "1.25.0", features = ["full"] } # for our async runtime
+
+[features]
+vendored-openssl = ["openssl/vendored"]

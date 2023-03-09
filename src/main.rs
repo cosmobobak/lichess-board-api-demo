@@ -9,8 +9,14 @@ mod gametype;
 pub const LICHESS_TOKEN: &str = include_str!("../token.txt");
 pub const LICHESS_HOST: &str = "https://lichess.org";
 
-pub const VIRIDITHAS_EXECUTABLE_PATH: &str = include_str!("../viridithas_executable_path.txt");
-pub const MAIA_EXECUTABLE_PATH: &str = include_str!("../maia_executable_path.txt");
+#[cfg(windows)]
+pub const VIRIDITHAS_EXECUTABLE_PATH: &str = "engines\\viridithas.exe";
+#[cfg(windows)]
+pub const MAIA_EXECUTABLE_PATH: &str = "engines\\maia.exe";
+#[cfg(unix)]
+pub const VIRIDITHAS_EXECUTABLE_PATH: &str = "engines/viridithas";
+#[cfg(unix)]
+pub const MAIA_EXECUTABLE_PATH: &str = "engines/maia";
 
 #[tokio::main]
 async fn main() {
@@ -29,4 +35,6 @@ async fn main() {
     if args.engine {
         engine::main();
     }
+
+    print!("\x04");
 }
