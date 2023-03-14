@@ -46,23 +46,36 @@ pub fn main() {
         }
     };
 
-    loop {
+    'game_loop: loop {
         if game_state.is_game_over() {
             // eof
             print!("\x04");
             break;
         }
         if human_turn == game_state.turn() {
-            let mut line = String::new();
+            let mut buf = String::new();
+            let mut validation_failures = 0;
             let mv = loop {
-                line.clear();
-                std::io::stdin().read_line(&mut line).unwrap();
-                let Ok(san) = line.trim().parse::<shakmaty::san::San>() else {
-                    error!("invalid SAN format: {line}");
+                if validation_failures > 3 {
+                    error!("too many validation failures, aborting game");
+                    return;
+                }
+                buf.clear();
+                std::io::stdin().read_line(&mut buf).unwrap();
+                let line = buf.trim();
+                if matches!(line, "\x04" | "-1" | "quit" | "exit") {
+                    info!("received quit signal, sending \"quit\" to engine");
+                    send_line(&mut engine, "quit");
+                    break 'game_loop;
+                }
+                let Ok(san) = line.parse::<shakmaty::san::San>() else {
+                    error!("invalid SAN format: \"{line}\"");
+                    validation_failures += 1;
                     continue;
                 };
                 let Ok(mv) = san.to_move(&game_state) else {
-                    error!("illegal SAN move: {line}");
+                    error!("illegal SAN move: \"{line}\"");
+                    validation_failures += 1;
                     continue;
                 };
                 break mv;
