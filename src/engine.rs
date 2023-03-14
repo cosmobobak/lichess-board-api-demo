@@ -48,8 +48,7 @@ pub fn main() {
 
     'game_loop: loop {
         if game_state.is_game_over() {
-            // eof
-            print!("\x04");
+            send_line(&mut engine, "quit");
             break;
         }
         if human_turn == game_state.turn() {
@@ -113,8 +112,9 @@ fn send_line(process: &mut std::process::Child, line: &str) {
 fn get_engine_move(process: &mut std::process::Child, fen: &str, time: u64) -> String {
     info!("sending command: position fen {fen}");
     send_line(process, &format!("position fen {fen}\n"));
-    info!("sending command: go movetime {time}");
-    send_line(process, &format!("go movetime {time}\n"));
+    let time = time * 20;
+    info!("sending command: go wtime {time} btime {time}");
+    send_line(process, &format!("go wtime {time} btime {time}\n"));
     let stdout = process.stdout.as_mut().unwrap();
     let mut reader = BufReader::new(stdout);
     let mut line = String::new();
