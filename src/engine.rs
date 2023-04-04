@@ -3,7 +3,7 @@ use std::io::{Write, BufRead, BufReader};
 
 use log::{info, error};
 
-use shakmaty::{Position, fen::Fen, san::San};
+use shakmaty::{Position, fen::Fen, uci::Uci};
 
 use crate::{gametype::VsComputer, user::{self, ChallengeColour}, VIRIDITHAS_EXECUTABLE_PATH, MAIA_EXECUTABLE_PATH};
 
@@ -67,13 +67,13 @@ pub fn main() {
                     send_line(&mut engine, "quit");
                     break 'game_loop;
                 }
-                let Ok(san) = line.parse::<shakmaty::san::San>() else {
-                    error!("invalid SAN format: \"{line}\"");
+                let Ok(uci) = line.parse::<shakmaty::uci::Uci>() else {
+                    error!("invalid UCI format: \"{line}\"");
                     validation_failures += 1;
                     continue;
                 };
-                let Ok(mv) = san.to_move(&game_state) else {
-                    error!("illegal SAN move: \"{line}\"");
+                let Ok(mv) = uci.to_move(&game_state) else {
+                    error!("illegal UCI move: \"{line}\"");
                     validation_failures += 1;
                     continue;
                 };
@@ -85,9 +85,8 @@ pub fn main() {
             info!("engine move: {mvstr}");
             let uci = mvstr.parse::<shakmaty::uci::Uci>().unwrap();
             let mv = uci.to_move(&game_state).unwrap();
-            let san = San::from_move(&game_state, &mv);
             game_state.play_unchecked(&mv);
-            println!("{san}");
+            println!("{uci}");
         }
     }
 
